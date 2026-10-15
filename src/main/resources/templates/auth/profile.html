@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Profile & Security')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row g-4">
+            <!-- Profile Sidebar Card -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 text-center bg-white rounded-3">
+                    <div class="stat-icon-wrapper stat-icon-green mx-auto mb-3" style="width: 72px; height: 72px; font-size: 2.2rem;">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1" th:text="${currentUser.effectiveName}">User Name</h4>
+                    <p class="text-muted small mb-2" th:text="${currentUser.email}">user@example.com</p>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle"
+                              th:text="${currentUser.role.displayName}">Role</span>
+                        <span th:if="${currentUser.verificationStatus != null && currentUser.verificationStatus.name() == 'VERIFIED'}"
+                              class="badge bg-info-subtle text-info border border-info-subtle">
+                            <i class="bi bi-patch-check-fill me-1"></i> Verified
+                        </span>
+                        <span th:if="${currentUser.verificationStatus != null && currentUser.verificationStatus.name() == 'PENDING'}"
+                              class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                            <i class="bi bi-hourglass-split me-1"></i> Verification Pending
+                        </span>
+                    </div>
+
+                    <ul class="list-group list-group-flush text-start small border-top pt-2">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Account Type:</span>
+                            <strong th:text="${currentUser.accountType.label}">Individual</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">City / Pincode:</span>
+                            <span th:text="${currentUser.city} + ' (' + ${currentUser.pincode} + ')'">Chennai</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Joined Platform:</span>
+                            <span th:text="${#temporals.format(currentUser.createdAt, 'dd MMM yyyy')}">Date</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Profile Edit & Password Change Form -->
+            <div class="col-lg-8">
+                <!-- Update Profile Details -->
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-pencil-square text-success me-2"></i>Edit Profile Details</h5>
+                    <form th:action="@{/auth/profile/update}" th:object="${profileDto}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Name / Contact Person *</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" th:field="*{phone}">
+                            </div>
+
+                            <div class="col-12" th:if="${currentUser.accountType.name() != 'INDIVIDUAL_DONOR'}">
+                                <label for="organizationName" class="form-label fw-semibold">Organization / Establishment Name</label>
+                                <input type="text" class="form-control" id="organizationName" th:field="*{organizationName}">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="address" class="form-label fw-semibold">Address *</label>
+                                <input type="text" class="form-control" id="address" th:field="*{address}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="city" class="form-label fw-semibold">City *</label>
+                                <input type="text" class="form-control" id="city" th:field="*{city}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="state" class="form-label fw-semibold">State *</label>
+                                <input type="text" class="form-control" id="state" th:field="*{state}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label fw-semibold">Pincode *</label>
+                                <input type="text" class="form-control" id="pincode" th:field="*{pincode}" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-fb-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Change Password Form -->
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock text-warning me-2"></i>Change Password</h5>
+                    <form th:action="@{/auth/profile/password}" th:object="${passwordDto}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="currentPassword" class="form-label fw-semibold">Current Password *</label>
+                                <input type="password" class="form-control" id="currentPassword" th:field="*{currentPassword}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="newPassword" class="form-label fw-semibold">New Password *</label>
+                                <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label fw-semibold">Confirm New Password *</label>
+                                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" required>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-outline-danger">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

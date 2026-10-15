@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('My Food Listings')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">My Surplus Food Listings</h1>
+                <p class="text-muted small m-0">Manage your posted food donations and track distribution status</p>
+            </div>
+            <a th:href="@{/food/create}" class="btn btn-fb-accent">
+                <i class="bi bi-plus-circle me-1"></i> New Food Listing
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden" th:if="${not #lists.isEmpty(foodListings)}">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Food Item</th>
+                            <th>Category</th>
+                            <th>Quantity (Remaining / Total)</th>
+                            <th>Safe Collection Deadline</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="food : ${foodListings}">
+                            <td>
+                                <strong th:text="${food.foodName}">Food Name</strong>
+                                <div class="small text-muted" th:text="${food.dietaryType.label}">Veg</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border" th:text="${food.category.label}">Meals</span></td>
+                            <td>
+                                <strong th:text="${food.remainingQuantity} + ' ' + ${food.unit}">40 meals</strong>
+                                <span class="text-muted small" th:text="' / ' + ${food.quantity}">/ 50</span>
+                            </td>
+                            <td>
+                                <span th:text="${#temporals.format(food.safeCollectionDeadline, 'dd MMM, hh:mm a')}">Date</span>
+                                <div th:if="${food.isExpired()}" class="badge bg-danger-subtle text-danger small">Expired</div>
+                            </td>
+                            <td>
+                                <span th:if="${food.status.name() == 'AVAILABLE'}" class="badge-status-available">Available</span>
+                                <span th:if="${food.status.name() == 'REQUESTED'}" class="badge-status-requested">Requested</span>
+                                <span th:if="${food.status.name() == 'ACCEPTED'}" class="badge bg-info-subtle text-info">Accepted</span>
+                                <span th:if="${food.status.name() == 'PICKUP_SCHEDULED'}" class="badge-status-scheduled">Pickup Scheduled</span>
+                                <span th:if="${food.status.name() == 'COLLECTED'}" class="badge bg-primary-subtle text-primary">Collected</span>
+                                <span th:if="${food.status.name() == 'COMPLETED'}" class="badge-status-completed">Completed</span>
+                                <span th:if="${food.status.name() == 'WITHDRAWN'}" class="badge bg-secondary-subtle text-secondary">Withdrawn</span>
+                                <span th:if="${food.status.name() == 'EXPIRED'}" class="badge bg-danger-subtle text-danger">Expired</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{'/food/details/' + ${food.id}}" class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                    <form th:if="${food.status.name() == 'AVAILABLE'}"
+                                          th:action="@{'/food/withdraw/' + ${food.id}}" method="post"
+                                          onsubmit="return confirmAction('Withdraw this food listing from public view?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Withdraw</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(foodListings)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-egg-fried fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No food listings created yet</h4>
+            <p class="text-muted small mb-3">Begin by listing surplus meals from your restaurant, banquet, or kitchen.</p>
+            <div>
+                <a th:href="@{/food/create}" class="btn btn-fb-primary btn-sm">Create First Listing</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

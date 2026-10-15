@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Publish Community Need')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg p-4 p-md-5 bg-white rounded-4">
+                    <div class="mb-4">
+                        <span class="badge bg-success-subtle text-success border mb-2">Community Needs Module</span>
+                        <h2 class="fw-bold mb-1">Publish Community Requirement</h2>
+                        <p class="text-muted small">Announce urgent requirements for food, dry rations, blankets, or supplies for your organization</p>
+                    </div>
+
+                    <form th:action="@{/needs/create}" th:object="${needDto}" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="title" class="form-label fw-semibold">Requirement Title *</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}"
+                                       placeholder="e.g. Daily Hot Lunch for 90 Resident Orphanage Children" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="category" class="form-label fw-semibold">Category *</label>
+                                <select class="form-select" id="category" th:field="*{category}" required>
+                                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}">Category</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label fw-semibold">Priority Level *</label>
+                                <select class="form-select" id="priority" th:field="*{priority}" required>
+                                    <option th:each="p : ${priorities}" th:value="${p}" th:text="${p.label}">Priority</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="targetQuantity" class="form-label fw-semibold">Required Target Quantity *</label>
+                                <input type="number" step="0.5" min="0.5" class="form-control" id="targetQuantity"
+                                       th:field="*{targetQuantity}" placeholder="90" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('targetQuantity')}" th:errors="*{targetQuantity}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="unit" class="form-label fw-semibold">Unit *</label>
+                                <input type="text" class="form-control" id="unit" th:field="*{unit}"
+                                       placeholder="meals, blankets, kits, kg" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-semibold">Detailed Description & Beneficiary Need *</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="3"
+                                          placeholder="Explain why this need exists, who benefits, and any specific requirements..." required></textarea>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="targetDate" class="form-label fw-semibold">Target Fulfillment Date *</label>
+                                <input type="date" class="form-control" id="targetDate" th:field="*{targetDate}" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('targetDate')}" th:errors="*{targetDate}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="city" class="form-label fw-semibold">City *</label>
+                                <input type="text" class="form-control" id="city" th:field="*{city}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label fw-semibold">Pincode *</label>
+                                <input type="text" class="form-control" id="pincode" th:field="*{pincode}" required>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-top d-flex justify-content-between mt-4">
+                            <a th:href="@{/needs}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-fb-primary px-4 fw-bold">Publish Need to Community</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

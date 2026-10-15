@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="html_head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' — FoodBridge'">FoodBridge: Smart Food Donation Platform</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- NAVBAR FRAGMENT -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-foodbridge">
+        <div class="container-fluid px-lg-4">
+            <a class="brand-logo" th:href="@{/}">
+                <div class="brand-icon">
+                    <i class="bi bi-heart-fill"></i>
+                </div>
+                <span>Food<span style="color: var(--accent);">Bridge</span></span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/food}">Food Donations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/materials}">Material Donations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/cash}">Fundraising</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/needs}">Community Needs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" th:href="@{/about}">About</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Guest View -->
+                    <div sec:authorize="isAnonymous()" class="d-flex gap-2">
+                        <a th:href="@{/auth/login}" class="btn btn-fb-outline py-2 px-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
+                        <a th:href="@{/auth/register}" class="btn btn-fb-primary py-2 px-3">
+                            <i class="bi bi-person-plus me-1"></i> Register
+                        </a>
+                    </div>
+
+                    <!-- Authenticated View -->
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-3">
+                        <!-- Notifications Bell -->
+                        <a th:href="@{/notifications}" class="position-relative p-2 text-dark text-decoration-none">
+                            <i class="bi bi-bell-fill fs-5" style="color: var(--primary);"></i>
+                            <span id="notifBadge" class="notif-bell-badge" style="display: none;">0</span>
+                        </a>
+
+                        <!-- Dashboard Quick Link -->
+                        <a th:href="@{/dashboard}" class="btn btn-fb-outline py-2 px-3 d-none d-md-inline-flex">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+
+                        <!-- User Profile Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 border"
+                                    type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-5" style="color: var(--primary);"></i>
+                                <span sec:authentication="name" class="fw-semibold">User</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userMenuBtn">
+                                <li><a class="dropdown-item" th:href="@{/dashboard}"><i class="bi bi-speedometer2 me-2"></i>My Dashboard</a></li>
+                                <li><a class="dropdown-item" th:href="@{/auth/profile}"><i class="bi bi-person-gear me-2"></i>Profile & Security</a></li>
+                                <li><a class="dropdown-item" th:href="@{/pickups}"><i class="bi bi-truck me-2"></i>Pickups & Handover</a></li>
+                                <li><a class="dropdown-item" th:href="@{/notifications}"><i class="bi bi-bell me-2"></i>Notifications</a></li>
+                                <li sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                    <a class="dropdown-item text-danger fw-semibold" th:href="@{/admin/dashboard}">
+                                        <i class="bi bi-shield-lock-fill me-2"></i>Admin Console
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form th:action="@{/auth/logout}" method="post" class="m-0">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ALERTS FRAGMENT -->
+    <div th:fragment="alerts" class="container mt-3">
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill fs-5 me-2 text-success"></i>
+            <span th:text="${successMessage}">Operation successful!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-5 me-2 text-danger"></i>
+            <span th:text="${errorMessage}">An error occurred!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- FOOTER FRAGMENT -->
+    <footer th:fragment="footer" class="footer-foodbridge">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <h4 class="text-white m-0">FoodBridge</h4>
+                    </div>
+                    <p class="text-light opacity-75 small">
+                        "Good Things Deserve to Be Shared."<br>
+                        Smart Food Donation and Redistribution Platform bridging restaurants, donors, and recipient organizations across Chennai, Tamil Nadu.
+                    </p>
+                    <div class="small text-light opacity-50 mt-2">
+                        &copy; 2026 FoodBridge. All rights reserved.
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white text-uppercase fw-bold mb-3">Donations</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a th:href="@{/food}">Surplus Food</a></li>
+                        <li><a th:href="@{/materials}">Material Items</a></li>
+                        <li><a th:href="@{/cash}">Fundraising Drives</a></li>
+                        <li><a th:href="@{/needs}">Community Needs</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white text-uppercase fw-bold mb-3">Quick Navigation</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a th:href="@{/about}">Platform Mission</a></li>
+                        <li><a th:href="@{/auth/register}">Join as Donor or NGO</a></li>
+                        <li><a th:href="@{/dashboard}">Role Dashboards</a></li>
+                        <li><a th:href="@{/pickups}">Pickup Coordination</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white text-uppercase fw-bold mb-3">Project Disclaimer</h6>
+                    <div class="demo-banner py-2 px-3 small" style="background: rgba(254, 243, 199, 0.1); border-color: rgba(254, 243, 199, 0.2); color: #FEF3C7;">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        Academic project demonstration. Simulated payments do not collect real monetary funds.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS FRAGMENT -->
+    <div th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/main.js}"></script>
+    </div>
+</body>
+</html>

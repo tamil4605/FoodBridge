@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Pickups & Deliveries')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Pickup & Delivery Coordination</h1>
+                <p class="text-muted small m-0">Track scheduled handovers, confirm collection, and verify donation receipts</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden" th:if="${not #lists.isEmpty(pickups)}">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Donation Item</th>
+                            <th>Donor</th>
+                            <th>Recipient Org</th>
+                            <th>Scheduled Date & Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pickup : ${pickups}">
+                            <td>
+                                <strong th:text="${pickup.donationRequest.itemTitle}">Item</strong>
+                                <div class="small text-muted" th:text="${pickup.donationRequest.requestedQuantity} + ' ' + ${pickup.donationRequest.unit}">Quantity</div>
+                            </td>
+                            <td><span th:text="${pickup.donor.effectiveName}">Donor</span></td>
+                            <td><span th:text="${pickup.recipientOrg.effectiveName}">Recipient</span></td>
+                            <td>
+                                <strong th:text="${#temporals.format(pickup.scheduledDateTime, 'dd MMM yyyy, hh:mm a')}">Date</strong>
+                                <div class="small text-muted" th:text="${pickup.city}">Chennai</div>
+                            </td>
+                            <td>
+                                <span th:if="${pickup.status.name() == 'SCHEDULED'}" class="badge-status-scheduled">Scheduled</span>
+                                <span th:if="${pickup.status.name() == 'IN_TRANSIT'}" class="badge bg-warning-subtle text-warning">In Transit</span>
+                                <span th:if="${pickup.status.name() == 'COLLECTED'}" class="badge bg-primary-subtle text-primary">Collected</span>
+                                <span th:if="${pickup.status.name() == 'HANDED_OVER'}" class="badge-status-completed">Handed Over</span>
+                                <span th:if="${pickup.status.name() == 'CANCELLED'}" class="badge bg-danger-subtle text-danger">Cancelled</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/pickups/details/' + ${pickup.id}}" class="btn btn-sm btn-outline-primary">
+                                    Manage & Verify
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(pickups)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-truck fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No pickups currently scheduled</h4>
+            <p class="text-muted small mb-3">When a donation request is accepted, pickup scheduling will appear here.</p>
+            <div>
+                <a th:href="@{/dashboard}" class="btn btn-fb-primary btn-sm">Return to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Feedback Moderation')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Feedback & Review Moderation</h1>
+                <p class="text-muted small m-0">Review reported comments and ensure constructive, professional platform reviews</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4">
+            <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-flag-fill me-2"></i>Reported Feedback Queue</h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(reportedFeedbacks)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>From (Giver)</th>
+                            <th>To (Recipient)</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Report Reason</th>
+                            <th>Moderation Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="fb : ${reportedFeedbacks}">
+                            <td><strong th:text="${fb.giver.effectiveName}">Giver</strong></td>
+                            <td><strong th:text="${fb.receiver.effectiveName}">Receiver</strong></td>
+                            <td><span class="text-warning">&#9733; <span th:text="${fb.rating}">5</span></span></td>
+                            <td th:text="${fb.comment}">Comment text</td>
+                            <td class="text-danger small" th:text="${fb.reportReason}">Reason</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form th:action="@{/admin/feedbacks/moderate}" method="post">
+                                        <input type="hidden" name="feedbackId" th:value="${fb.id}">
+                                        <input type="hidden" name="delete" value="false">
+                                        <button type="submit" class="btn btn-sm btn-success">Approve & Clear Flag</button>
+                                    </form>
+                                    <form th:action="@{/admin/feedbacks/moderate}" method="post">
+                                        <input type="hidden" name="feedbackId" th:value="${fb.id}">
+                                        <input type="hidden" name="delete" value="true">
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete Review</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(reportedFeedbacks)}" class="text-center text-muted p-4">
+                <i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i>
+                No reviews currently flagged for moderation.
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

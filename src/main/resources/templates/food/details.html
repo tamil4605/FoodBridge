@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: html_head(${food.foodName})}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-light text-dark border px-3 py-2 fw-semibold" th:text="${food.category.label}">Category</span>
+                        <div class="d-flex gap-2">
+                            <span th:if="${food.dietaryType.name() == 'VEGETARIAN'}" class="badge-diet-veg">
+                                <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Vegetarian
+                            </span>
+                            <span th:if="${food.dietaryType.name() == 'NON_VEGETARIAN'}" class="badge-diet-nonveg">
+                                <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Non-Vegetarian
+                            </span>
+                            <span th:if="${food.dietaryType.name() == 'VEGAN'}" class="badge-diet-vegan">
+                                <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Vegan
+                            </span>
+                            <span class="badge-status-available" th:text="${food.status.label}">Available</span>
+                        </div>
+                    </div>
+
+                    <h1 class="display-6 fw-bold mb-3" th:text="${food.foodName}">Food Title</h1>
+                    <p class="text-secondary mb-4" th:text="${food.description}">Detailed food description...</p>
+
+                    <div class="row g-3 p-3 bg-light rounded-3 mb-4">
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Available Remaining Quantity</span>
+                            <strong class="fs-4 text-success" th:text="${food.remainingQuantity} + ' ' + ${food.unit}">50 meals</strong>
+                            <small class="text-muted d-block" th:text="'(Total Listed: ' + ${food.quantity} + ' ' + ${food.unit} + ')'"></small>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Safe Collection Deadline</span>
+                            <strong class="fs-5 text-danger" th:text="${#temporals.format(food.safeCollectionDeadline, 'dd MMM yyyy, hh:mm a')}">Deadline</strong>
+                            <small class="text-muted d-block" th:text="'Prepared: ' + ${#temporals.format(food.preparationDateTime, 'dd MMM, hh:mm a')}"></small>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Storage & Safety Specifications</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6" th:if="${food.storageInstructions != null and !food.storageInstructions.isEmpty()}">
+                            <div class="p-3 border rounded-3 bg-white">
+                                <span class="text-muted small d-block">Storage Instructions:</span>
+                                <strong th:text="${food.storageInstructions}">Refrigerated</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6" th:if="${food.allergenInfo != null and !food.allergenInfo.isEmpty()}">
+                            <div class="p-3 border rounded-3 bg-white">
+                                <span class="text-muted small d-block">Allergen Advice:</span>
+                                <strong class="text-danger" th:text="${food.allergenInfo}">Contains dairy</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Collection & Pickup Location</h5>
+                    <div class="p-3 border rounded-3 bg-white mb-4">
+                        <p class="m-0 fw-semibold" th:text="${food.pickupAddress}">Address</p>
+                        <p class="m-0 text-muted small" th:text="${food.city} + ', Tamil Nadu - ' + ${food.pincode}">City, Pincode</p>
+                        <div class="mt-2 text-muted small" th:if="${food.pickupInstructions != null and !food.pickupInstructions.isEmpty()}">
+                            <i class="bi bi-signpost-2 me-1"></i> <strong>Instructions:</strong> <span th:text="${food.pickupInstructions}">Gate info</span>
+                        </div>
+                    </div>
+
+                    <!-- Request Action Button for NGOs -->
+                    <div class="d-flex flex-wrap gap-2 pt-3 border-top">
+                        <button sec:authorize="hasAuthority('ROLE_RECIPIENT_ORG')"
+                                th:if="${food.status.name() == 'AVAILABLE' and !food.isExpired()}"
+                                type="button" class="btn btn-fb-accent btn-lg px-4"
+                                data-bs-toggle="modal" data-bs-target="#requestFoodModal">
+                            <i class="bi bi-hand-thumbs-up me-1"></i> Request This Food Donation
+                        </button>
+
+                        <div sec:authorize="isAnonymous()">
+                            <a th:href="@{/auth/login}" class="btn btn-fb-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Request
+                            </a>
+                        </div>
+
+                        <a th:href="@{/food}" class="btn btn-outline-secondary btn-lg">
+                            Back to Listings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donor Sidebar Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-4 text-center">
+                    <div class="stat-icon-wrapper stat-icon-green mx-auto mb-3">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <span class="badge bg-success-subtle text-success small mb-2" th:text="${food.donor.role.displayName}">Role</span>
+                    <h5 class="fw-bold mb-1" th:text="${food.donor.effectiveName}">Donor Name</h5>
+                    <p class="text-muted small mb-3"><i class="bi bi-geo-alt me-1"></i><span th:text="${food.donor.city} + ' (' + ${food.donor.pincode} + ')'">Chennai</span></p>
+
+                    <div class="p-3 bg-light rounded-3 text-start small border">
+                        <div class="mb-2"><strong>Platform Verification:</strong> <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Verified Donor</span></div>
+                        <div><strong>Member Since:</strong> <span th:text="${#temporals.format(food.donor.createdAt, 'MMM yyyy')}">Date</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUEST MODAL FOR RECIPIENT ORGANIZATIONS -->
+    <div class="modal fade" id="requestFoodModal" tabindex="-1" aria-labelledby="requestFoodModalLabel" aria-hidden="true"
+         sec:authorize="hasAuthority('ROLE_RECIPIENT_ORG')">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="requestFoodModalLabel">Request Food Allocation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/requests/submit}" th:object="${requestDto}" method="post">
+                    <input type="hidden" th:field="*{donationId}">
+                    <input type="hidden" th:field="*{donationType}">
+
+                    <div class="modal-body">
+                        <p class="text-muted small mb-3">
+                            Submit a request for <strong th:text="${food.foodName}">Item</strong>. The donor will receive your request immediately.
+                        </p>
+
+                        <div class="mb-3">
+                            <label for="reqQty" class="form-label fw-semibold">Quantity Needed (<span th:text="${food.unit}">meals</span>) *</label>
+                            <input type="number" step="0.5" class="form-control" id="reqQty"
+                                   th:field="*{requestedQuantity}"
+                                   th:data-max-qty="${food.remainingQuantity}"
+                                   min="0.5" th:max="${food.remainingQuantity}" required>
+                            <div class="form-text small">Maximum available: <strong th:text="${food.remainingQuantity} + ' ' + ${food.unit}">50</strong></div>
+                            <div id="reqQty-error" class="text-danger small"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reqMsg" class="form-label fw-semibold">Note / Recipient Details (Optional)</label>
+                            <textarea class="form-control" id="reqMsg" th:field="*{message}" rows="3"
+                                      placeholder="Explain your organization's distribution plan (e.g. For 40 children at Tambaram orphanage)..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-fb-accent">Confirm Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

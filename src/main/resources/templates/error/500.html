@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Server Error (500)')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div class="container py-5 text-center">
+        <div class="stat-icon-wrapper stat-icon-amber mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+            <i class="bi bi-exclamation-octagon"></i>
+        </div>
+        <h1 class="display-5 fw-bold mb-2">500 &mdash; Application Error</h1>
+        <p class="text-muted lead mx-auto mb-4" style="max-width: 500px;"
+           th:text="${message != null ? message : 'An unexpected error occurred while processing your request. Please try again.'}">
+            An unexpected error occurred.
+        </p>
+        <a th:href="@{/}" class="btn btn-fb-primary">Return to Homepage</a>
+    </div>
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

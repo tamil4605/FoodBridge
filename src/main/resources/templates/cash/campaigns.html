@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Fundraising Campaigns')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Fundraising Campaigns</h1>
+                <p class="text-muted small m-0">Support verified charitable causes for children, nutrition, shelter, and medical relief</p>
+            </div>
+            <a th:href="@{/cash/create}" class="btn btn-fb-accent">
+                <i class="bi bi-megaphone me-1"></i> Launch Campaign
+            </a>
+        </div>
+
+        <!-- Academic Demo Disclaimer -->
+        <div class="demo-banner mb-4">
+            <i class="bi bi-info-circle-fill fs-5 me-1"></i>
+            <div>
+                <strong>Academic Demo Mode:</strong> Contributions in this module are processed via simulation mode. No real banking credentials, cards, or UPI PINs are ever collected.
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-card">
+            <form th:action="@{/cash}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold text-muted mb-1">Search Campaigns</label>
+                    <input type="text" class="form-control form-control-sm" name="keyword" th:value="${keyword}"
+                           placeholder="Search campaigns by title, keywords...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-muted mb-1">Cause Category</label>
+                    <select class="form-select form-select-sm" name="category">
+                        <option value="">All Causes</option>
+                        <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}"
+                                th:selected="${selectedCategory == c}">Cause</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-fb-primary btn-sm w-100">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <a th:href="@{/cash}" class="btn btn-outline-secondary btn-sm" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Campaigns Grid -->
+        <div class="row g-4" th:if="${not #lists.isEmpty(campaigns)}">
+            <div class="col-lg-4 col-md-6" th:each="camp : ${campaigns}">
+                <div class="fb-card">
+                    <div class="fb-card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark border px-2 py-1" th:text="${camp.causeCategory.label}">Category</span>
+                        <span class="badge bg-success-subtle text-success small border border-success-subtle">
+                            <i class="bi bi-patch-check-fill me-1"></i> Verified Cause
+                        </span>
+                    </div>
+
+                    <div class="fb-card-body">
+                        <h5 class="fw-bold mb-2" th:text="${camp.title}">Campaign Title</h5>
+                        <p class="text-muted small mb-3" style="min-height: 48px;"
+                           th:text="${#strings.abbreviate(camp.description, 95)}">Description</p>
+
+                        <!-- Progress Bar & Amounts -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Raised: <strong class="text-success">₹<span th:text="${#numbers.formatDecimal(camp.raisedAmount, 0, 'COMMA', 0, 'POINT')}">42,500</span></strong></span>
+                                <span>Target: <strong>₹<span th:text="${#numbers.formatDecimal(camp.targetAmount, 0, 'COMMA', 0, 'POINT')}">75,000</span></strong></span>
+                            </div>
+                            <div class="progress-fb">
+                                <div class="progress-fb-bar" th:style="'width: ' + ${camp.progressPercentage} + '%;'"></div>
+                            </div>
+                            <div class="text-end small text-muted mt-1" th:text="${camp.progressPercentage} + '% Funded'">56% Funded</div>
+                        </div>
+
+                        <div class="small text-muted border-top pt-2 d-flex justify-content-between">
+                            <span><i class="bi bi-building me-1"></i><span th:text="${camp.organization.effectiveName}">Org</span></span>
+                            <span><i class="bi bi-clock me-1"></i>Ends <span th:text="${#temporals.format(camp.deadline, 'dd MMM')}">Date</span></span>
+                        </div>
+                    </div>
+
+                    <div class="fb-card-footer d-flex justify-content-between align-items-center">
+                        <span class="small text-muted"><i class="bi bi-heart text-danger me-1"></i> Demo Donation</span>
+                        <a th:href="@{'/cash/details/' + ${camp.id}}" class="btn btn-fb-accent btn-sm">
+                            View & Donate
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(campaigns)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-currency-rupee fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No fundraising campaigns match your criteria</h4>
+            <p class="text-muted small mb-3">Check back soon or explore community needs to offer food and materials directly.</p>
+            <div>
+                <a th:href="@{/cash}" class="btn btn-fb-outline btn-sm me-2">Clear Filters</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

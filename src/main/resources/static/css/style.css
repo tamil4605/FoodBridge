@@ -1,0 +1,551 @@
+/* ==============================================================
+   FOODBRIDGE - DESIGN SYSTEM & STYLESHEET
+   Brand: Forest Green (#166534), Fresh Green (#22C55E), Off-White (#F8FAF7)
+   ============================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary: #166534;          /* Forest Green */
+    --primary-dark: #14532d;
+    --primary-light: #15803d;
+    --accent: #22C55E;           /* Fresh Green */
+    --accent-hover: #16a34a;
+    --accent-bg: #DCFCE7;
+    --bg-page: #F8FAF7;          /* Off-white */
+    --card-bg: #FFFFFF;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --border-subtle: #E2E8F0;
+    --shadow-soft: 0 4px 20px -2px rgba(22, 101, 52, 0.08);
+    --shadow-hover: 0 12px 28px -4px rgba(22, 101, 52, 0.15);
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+/* NAVBAR */
+.navbar-foodbridge {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.85rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 1.45rem;
+    color: var(--primary) !important;
+    text-decoration: none;
+    letter-spacing: -0.03em;
+}
+
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.35);
+}
+
+.nav-link-custom {
+    font-weight: 500;
+    color: #334155 !important;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.nav-link-custom:hover {
+    color: var(--primary) !important;
+    background-color: rgba(34, 197, 94, 0.08);
+}
+
+.nav-link-custom.active {
+    color: var(--primary) !important;
+    font-weight: 600;
+    background-color: var(--accent-bg);
+}
+
+/* BUTTONS */
+.btn-fb-primary {
+    background-color: var(--primary);
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.35rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-fb-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(20, 83, 45, 0.25);
+}
+
+.btn-fb-accent {
+    background: linear-gradient(135deg, var(--accent), var(--primary-light));
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.35rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-fb-accent:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(34, 197, 94, 0.3);
+}
+
+.btn-fb-outline {
+    background-color: transparent;
+    color: var(--primary) !important;
+    border: 1.5px solid var(--primary);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.6rem 1.25rem;
+    transition: var(--transition);
+}
+
+.btn-fb-outline:hover {
+    background-color: var(--primary);
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+}
+
+/* HERO SECTION */
+.hero-section {
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 45%, #F8FAF7 100%);
+    padding: 4.5rem 1rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.15);
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #FFFFFF;
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.35rem 0.95rem;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 1.25rem;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.hero-title {
+    font-size: 3.1rem;
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+    color: #064E3B;
+}
+
+.hero-lead {
+    font-size: 1.15rem;
+    color: #334155;
+    margin-bottom: 2rem;
+    max-width: 620px;
+}
+
+/* CARDS */
+.fb-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.fb-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+.fb-card-header {
+    padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.fb-card-body {
+    padding: 1rem 1.25rem;
+    flex-grow: 1;
+}
+
+.fb-card-footer {
+    padding: 0.85rem 1.25rem 1.25rem;
+    background: transparent;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* STATS COUNTER TILES */
+.stat-tile {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: var(--transition);
+}
+
+.stat-tile:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.stat-icon-wrapper {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.stat-icon-green { background: #DCFCE7; color: #166534; }
+.stat-icon-blue  { background: #E0F2FE; color: #0369A1; }
+.stat-icon-amber { background: #FEF3C7; color: #B45309; }
+.stat-icon-purple{ background: #F3E8FF; color: #7E22CE; }
+
+.stat-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* BADGES */
+.badge-diet-veg {
+    background-color: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-diet-nonveg {
+    background-color: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-diet-vegan {
+    background-color: #F0FDF4;
+    color: #15803D;
+    border: 1px solid #BBF7D0;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+}
+
+.badge-status-available {
+    background-color: #DCFCE7;
+    color: #14532D;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+}
+
+.badge-status-requested {
+    background-color: #FEF3C7;
+    color: #92400E;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+}
+
+.badge-status-scheduled {
+    background-color: #E0E7FF;
+    color: #3730A3;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+}
+
+.badge-status-completed {
+    background-color: #E2E8F0;
+    color: #334155;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 6px;
+}
+
+.badge-priority-urgent {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+}
+
+/* PROGRESS BAR */
+.progress-fb {
+    height: 10px;
+    background-color: #E2E8F0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fb-bar {
+    background: linear-gradient(90deg, var(--accent), var(--primary));
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.6s ease-in-out;
+}
+
+/* FILTER BAR */
+.filter-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-soft);
+}
+
+/* STEP CARDS */
+.step-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+}
+
+.step-number {
+    width: 44px;
+    height: 44px;
+    background: var(--primary);
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 4px 10px rgba(22, 101, 52, 0.3);
+}
+
+/* DEMO NOTICE BANNER */
+.demo-banner {
+    background: #FEF3C7;
+    border: 1px solid #FDE68A;
+    color: #92400E;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* FOOTER */
+.footer-foodbridge {
+    background: #064E3B;
+    color: #D1FAE5;
+    padding: 3.5rem 1rem 2rem;
+    margin-top: auto;
+    border-top: 4px solid var(--accent);
+}
+
+.footer-foodbridge a {
+    color: #A7F3D0;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-foodbridge a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+/* PRESET AMOUNT BUTTONS */
+.preset-btn {
+    border: 1.5px solid var(--border-subtle);
+    background: #FFFFFF;
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.preset-btn:hover, .preset-btn.active {
+    border-color: var(--primary);
+    background-color: var(--accent-bg);
+    color: var(--primary);
+}
+
+/* NOTIFICATION BELL */
+.notif-bell-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #EF4444;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid white;
+}
+
+/* TIMELINE TRACKER */
+.timeline-tracker {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.timeline-tracker::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 4px;
+    background: #E2E8F0;
+    z-index: 1;
+}
+
+.timeline-step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 25%;
+}
+
+.timeline-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #E2E8F0;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    font-weight: 700;
+    border: 3px solid #FFFFFF;
+}
+
+.timeline-step.completed .timeline-icon {
+    background: var(--accent);
+    color: #FFFFFF;
+}
+
+.timeline-step.active .timeline-icon {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    .timeline-tracker {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .timeline-tracker::before {
+        display: none;
+    }
+    .timeline-step {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .timeline-icon {
+        margin: 0;
+    }
+}

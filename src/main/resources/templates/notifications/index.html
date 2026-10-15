@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Notifications')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Notification Center</h1>
+                <p class="text-muted small m-0">Real-time alerts for incoming requests, collection updates, and campaign milestones</p>
+            </div>
+            <button id="markAllReadBtn" class="btn btn-outline-secondary btn-sm" onclick="markAllNotificationsAsRead()">
+                <i class="bi bi-check2-all me-1"></i> Mark All as Read
+            </button>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4" th:if="${not #lists.isEmpty(notifications)}">
+            <div class="d-flex flex-column gap-3">
+                <div th:each="n : ${notifications}"
+                     class="p-3 border rounded-3 d-flex justify-content-between align-items-center"
+                     th:classappend="${!n.read ? 'bg-light border-success unread-notification' : 'read-notification'}"
+                     th:id="'notif-' + ${n.id}">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon-wrapper" style="width: 42px; height: 42px; font-size: 1.2rem;"
+                             th:classappend="${!n.read ? 'stat-icon-green' : 'bg-light text-muted'}">
+                            <i class="bi bi-bell-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <strong th:text="${n.title}">Notification Title</strong>
+                                <span th:if="${!n.read}" class="badge bg-success-subtle text-success small">New</span>
+                            </div>
+                            <p class="text-secondary small mb-1" th:text="${n.message}">Notification message content...</p>
+                            <small class="text-muted" th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, hh:mm a')}">Date</small>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <a th:if="${n.linkUrl != null}" th:href="${n.linkUrl}" class="btn btn-sm btn-outline-primary"
+                           th:onclick="'markNotificationAsRead(' + ${n.id} + ', document.getElementById(\'notif-' + ${n.id} + '\'))'">
+                            View
+                        </a>
+                        <button th:if="${!n.read}" type="button" class="btn btn-sm btn-light border"
+                                th:onclick="'markNotificationAsRead(' + ${n.id} + ', document.getElementById(\'notif-' + ${n.id} + '\'))'"
+                                title="Mark as read">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(notifications)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-bell-slash fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No notifications</h4>
+            <p class="text-muted small">You are all caught up on your FoodBridge updates.</p>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

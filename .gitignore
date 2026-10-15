@@ -1,0 +1,10 @@
+target/
+.vscode/
+.idea/
+.env
+*.log
+*-log.txt
+startup-error.txt
+hs_err_pid.log
+replay_pid.log
+application-local.properties

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('System Audit Logs')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">System Audit Trail</h1>
+                <p class="text-muted small m-0">Immutable records of registration, verification, approvals, and donation state transitions</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Actor / Email</th>
+                            <th>Action Type</th>
+                            <th>Entity Target</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${logs}">
+                            <td class="text-muted small" th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy, hh:mm:ss a')}">Time</td>
+                            <td><strong th:text="${log.actor}">Actor</strong></td>
+                            <td><span class="badge bg-secondary-subtle text-secondary" th:text="${log.action}">Action</span></td>
+                            <td><span th:text="${log.entityName} + ' #' + ${log.entityId}">Target</span></td>
+                            <td th:text="${log.details}">Details</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

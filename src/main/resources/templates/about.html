@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('About Platform')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <span class="badge bg-success px-3 py-2 text-uppercase mb-2">College Project Specification</span>
+                <h1 class="display-5 fw-bold mb-3" style="color: var(--primary);">FoodBridge: Smart Food Donation and Redistribution Platform</h1>
+                <p class="lead text-muted">
+                    "Good Things Deserve to Be Shared." A full-stack social impact platform built strictly using the approved college academic tech stack.
+                </p>
+
+                <hr class="my-4">
+
+                <h3 class="fw-bold mb-3">Project Objective & Problem Statement</h3>
+                <p>
+                    Every year, thousands of tons of perfectly wholesome cooked meals, bakery products, and perishable rations are discarded by catering establishments, hotels, and individual households, while simultaneously vulnerable populations in orphanages, old age homes, and temporary shelters face malnutrition.
+                </p>
+                <p>
+                    <strong>FoodBridge</strong> eliminates resource distribution friction by connecting donors with verified non-governmental organizations and charity kitchens within localized city zones in Chennai, Tamil Nadu.
+                </p>
+
+                <h3 class="fw-bold mt-5 mb-3">Approved Technology Architecture</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered bg-white shadow-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Layer</th>
+                                <th>Technology</th>
+                                <th>Strict Academic Guidelines Compliance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Backend Framework</strong></td>
+                                <td>Spring Boot 3.3.4 (Java 21)</td>
+                                <td>Clean layered architecture: Controller &rarr; Service &rarr; Repository &rarr; Entity &rarr; DTO</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database & ORM</strong></td>
+                                <td>MySQL 8.0 with Spring Data JPA & Hibernate</td>
+                                <td>Normalized schema with relationships, enumerated statuses, and timestamps</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security & Auth</strong></td>
+                                <td>Spring Security & BCrypt</td>
+                                <td>Role-based access control with session management</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Frontend Views</strong></td>
+                                <td>Thymeleaf Server-Side Rendering</td>
+                                <td>Server-rendered templates with dynamic fragment composition</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Client Scripts & Styling</strong></td>
+                                <td>Vanilla JavaScript + CSS3 + Bootstrap</td>
+                                <td>Asynchronous Fetch API, modern styling in Forest Green & Fresh Green</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Build Tool</strong></td>
+                                <td>Apache Maven</td>
+                                <td>Standard pom.xml dependency management</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="fw-bold mt-5 mb-3">Course Demo Mode Notice</h3>
+                <div class="demo-banner p-3">
+                    <i class="bi bi-info-circle-fill fs-4 me-2"></i>
+                    <div>
+                        <strong>Simulated Demonstration Sandbox:</strong>
+                        All payment and transaction modules in this application run exclusively in demo simulation mode. No credit cards, bank accounts, or UPI PINs are ever requested.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Active Location Zones</h5>
+                    <p class="small text-muted mb-3">
+                        Initial rollout and demonstration datasets are mapped to Chennai, Tamil Nadu:
+                    </p>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between"><span>T. Nagar</span> <span class="badge bg-light text-dark">600017</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Mylapore</span> <span class="badge bg-light text-dark">600004</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Anna Nagar</span> <span class="badge bg-light text-dark">600040</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Adyar</span> <span class="badge bg-light text-dark">600020</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Velachery</span> <span class="badge bg-light text-dark">600042</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Tambaram</span> <span class="badge bg-light text-dark">600045</span></li>
+                        <li class="list-group-item d-flex justify-content-between"><span>Guindy</span> <span class="badge bg-light text-dark">600032</span></li>
+                    </ul>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3 mt-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-people-fill text-success me-2"></i>Supported Roles</h5>
+                    <div class="d-flex flex-column gap-2 small">
+                        <div class="p-2 border rounded"><strong>1. Individual Donor</strong> - Share excess groceries, home-cooked food, clothes & books</div>
+                        <div class="p-2 border rounded"><strong>2. Restaurant / Business Donor</strong> - Hotels, banquet halls & bakeries donating bulk surplus meals</div>
+                        <div class="p-2 border rounded"><strong>3. Recipient Organization</strong> - NGOs, orphanages & old age homes receiving donations & publishing community needs</div>
+                        <div class="p-2 border rounded"><strong>4. Administrator</strong> - Organization verification, audit trails, and platform moderation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

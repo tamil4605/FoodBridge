@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Organization Dashboard')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <!-- Verification Banner if Pending -->
+        <div th:if="${currentUser.verificationStatus != null and currentUser.verificationStatus.name() == 'PENDING'}"
+             class="alert alert-warning border-warning d-flex align-items-center p-3 rounded-3 mb-4 shadow-sm">
+            <i class="bi bi-hourglass-split fs-3 me-3 text-warning"></i>
+            <div>
+                <strong class="d-block">Organization Profile Pending Administrator Verification</strong>
+                <small>Your NGO/Recipient registration is currently under review by our administration team. You can explore donations and prepare community needs; once verified, your listings will appear with a verified credibility badge.</small>
+            </div>
+        </div>
+
+        <!-- Welcome Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle mb-1" th:text="${currentUser.role.displayName}">Recipient Org</span>
+                <h1 class="h2 fw-bold m-0" th:text="'Welcome, ' + ${currentUser.effectiveName}">Welcome, NGO</h1>
+                <p class="text-muted small m-0"><i class="bi bi-geo-alt me-1"></i><span th:text="${currentUser.city} + ' (' + ${currentUser.pincode} + ')'">Chennai</span> &bull; Verified Rating: <strong class="text-warning">&#9733; <span th:text="${averageRating}">5.0</span></strong></p>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/needs/create}" class="btn btn-fb-accent">
+                    <i class="bi bi-plus-circle me-1"></i> Post Community Need
+                </a>
+                <a th:href="@{/cash/create}" class="btn btn-fb-primary">
+                    <i class="bi bi-megaphone me-1"></i> Launch Campaign
+                </a>
+                <a th:href="@{/food}" class="btn btn-fb-outline">
+                    <i class="bi bi-search me-1"></i> Request Food
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-tile">
+                    <div class="stat-icon-wrapper stat-icon-amber"><i class="bi bi-send-check"></i></div>
+                    <div class="text-start">
+                        <div class="stat-val" th:text="${#lists.size(myRequests)}">0</div>
+                        <div class="stat-label">Donation Requests</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-tile">
+                    <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-heart-pulse"></i></div>
+                    <div class="text-start">
+                        <div class="stat-val" th:text="${#lists.size(myNeeds)}">0</div>
+                        <div class="stat-label">Community Needs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-tile">
+                    <div class="stat-icon-wrapper stat-icon-blue"><i class="bi bi-currency-rupee"></i></div>
+                    <div class="text-start">
+                        <div class="stat-val" th:text="${#lists.size(myCampaigns)}">0</div>
+                        <div class="stat-label">Fundraising Drives</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-tile">
+                    <div class="stat-icon-wrapper stat-icon-purple"><i class="bi bi-truck"></i></div>
+                    <div class="text-start">
+                        <div class="stat-val" th:text="${#lists.size(pickups)}">0</div>
+                        <div class="stat-label">Pickups to Collect</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OUTGOING REQUESTS STATUS TABLE -->
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-inbox-fill text-primary"></i> My Active Donation Requests
+            </h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(myRequests)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Requested Item</th>
+                            <th>Donor Establishment</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="req : ${myRequests}">
+                            <td><strong th:text="${req.itemTitle}">Item</strong></td>
+                            <td>
+                                <span th:text="${req.donor.effectiveName}">Donor Name</span>
+                                <div class="small text-muted" th:text="${req.donor.city}">Chennai</div>
+                            </td>
+                            <td><strong class="text-success" th:text="${req.requestedQuantity} + ' ' + ${req.unit}">10</strong></td>
+                            <td>
+                                <span th:if="${req.status.name() == 'PENDING'}" class="badge bg-warning-subtle text-warning">Pending Review</span>
+                                <span th:if="${req.status.name() == 'ACCEPTED'}" class="badge bg-success-subtle text-success">Accepted &bull; Ready for Pickup</span>
+                                <span th:if="${req.status.name() == 'REJECTED'}" class="badge bg-danger-subtle text-danger">Declined</span>
+                                <span th:if="${req.status.name() == 'COMPLETED'}" class="badge bg-secondary-subtle text-secondary">Completed</span>
+                            </td>
+                            <td>
+                                <div th:if="${req.status.name() == 'ACCEPTED'}">
+                                    <a th:href="@{'/pickups/schedule?requestId=' + ${req.id}}" class="btn btn-sm btn-fb-primary">
+                                        <i class="bi bi-calendar-plus me-1"></i> Schedule Pickup
+                                    </a>
+                                </div>
+                                <span th:if="${req.status.name() != 'ACCEPTED'}" class="text-muted small">&mdash;</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(myRequests)}" class="p-4 text-center text-muted">
+                You haven't requested any food or material items yet. <a th:href="@{/food}">Browse available surplus food</a>.
+            </div>
+        </div>
+
+        <!-- PUBLISHED NEEDS & CAMPAIGNS GRID -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm bg-white rounded-4 p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0"><i class="bi bi-heart-pulse text-danger me-2"></i>My Community Needs</h5>
+                        <a th:href="@{/needs/create}" class="btn btn-sm btn-outline-secondary">Add Need</a>
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:if="${not #lists.isEmpty(myNeeds)}">
+                        <div class="p-3 border rounded-3" th:each="n : ${myNeeds}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong th:text="${n.title}">Need Title</strong>
+                                <span class="badge bg-light text-dark border small" th:text="${n.category.label}">Food</span>
+                            </div>
+                            <div class="progress-fb my-2">
+                                <div class="progress-fb-bar" th:style="'width: ' + ${n.progressPercentage} + '%;'"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Fulfilled: <strong th:text="${n.fulfilledQuantity} + ' ' + ${n.unit}">0</strong> / <span th:text="${n.targetQuantity}">100</span></span>
+                                <a th:href="@{'/needs/details/' + ${n.id}}" class="text-success">View</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(myNeeds)}" class="p-4 text-center text-muted">
+                        No community needs published yet. <a th:href="@{/needs/create}">Publish a need</a>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm bg-white rounded-4 p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0"><i class="bi bi-megaphone text-primary me-2"></i>My Fundraising Drives</h5>
+                        <a th:href="@{/cash/create}" class="btn btn-sm btn-outline-secondary">New Campaign</a>
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:if="${not #lists.isEmpty(myCampaigns)}">
+                        <div class="p-3 border rounded-3" th:each="c : ${myCampaigns}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong th:text="${c.title}">Campaign Title</strong>
+                                <span th:if="${c.approvalStatus.name() == 'APPROVED'}" class="badge bg-success-subtle text-success small">Approved</span>
+                                <span th:if="${c.approvalStatus.name() == 'PENDING'}" class="badge bg-warning-subtle text-warning small">Pending Review</span>
+                                <span th:if="${c.approvalStatus.name() == 'REJECTED'}" class="badge bg-danger-subtle text-danger small">Rejected</span>
+                            </div>
+                            <div class="progress-fb my-2">
+                                <div class="progress-fb-bar" th:style="'width: ' + ${c.progressPercentage} + '%;'"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Raised: <strong class="text-success">₹<span th:text="${#numbers.formatDecimal(c.raisedAmount, 0, 'COMMA', 0, 'POINT')}">0</span></strong> / ₹<span th:text="${#numbers.formatDecimal(c.targetAmount, 0, 'COMMA', 0, 'POINT')}">50,000</span></span>
+                                <a th:href="@{'/cash/details/' + ${c.id}}" class="text-success">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(myCampaigns)}" class="p-4 text-center text-muted">
+                        No active campaigns. <a th:href="@{/cash/create}">Launch one</a>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

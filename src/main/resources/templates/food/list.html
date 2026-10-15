@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Browse Food Donations')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Available Food Donations</h1>
+                <p class="text-muted small m-0">Fresh meals, packaged rations, fruits, and bakery items ready for redistribution</p>
+            </div>
+            <a th:href="@{/food/create}" class="btn btn-fb-accent">
+                <i class="bi bi-plus-circle me-1"></i> Post Surplus Food
+            </a>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <form th:action="@{/food}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted mb-1">Search Keywords</label>
+                    <input type="text" class="form-control form-control-sm" name="keyword" th:value="${keyword}"
+                           placeholder="Search meals, rice, fruits...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">Category</label>
+                    <select class="form-select form-select-sm" name="category">
+                        <option value="">All Categories</option>
+                        <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}"
+                                th:selected="${selectedCategory == c}">Category</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">Dietary Type</label>
+                    <select class="form-select form-select-sm" name="dietaryType">
+                        <option value="">All Types</option>
+                        <option th:each="d : ${dietaryTypes}" th:value="${d}" th:text="${d.label}"
+                                th:selected="${selectedDietaryType == d}">Type</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">City</label>
+                    <input type="text" class="form-control form-control-sm" name="city" th:value="${city}" placeholder="e.g. Chennai">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label small fw-semibold text-muted mb-1">Pincode</label>
+                    <input type="text" class="form-control form-control-sm" name="pincode" th:value="${pincode}" placeholder="600017">
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-fb-primary btn-sm w-100">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <a th:href="@{/food}" class="btn btn-outline-secondary btn-sm" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Food Listings Grid -->
+        <div class="row g-4" th:if="${not #lists.isEmpty(foodListings)}">
+            <div class="col-lg-4 col-md-6" th:each="food : ${foodListings}">
+                <div class="fb-card">
+                    <div class="fb-card-header d-flex justify-content-between align-items-center">
+                        <span th:if="${food.dietaryType.name() == 'VEGETARIAN'}" class="badge-diet-veg">
+                            <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Veg
+                        </span>
+                        <span th:if="${food.dietaryType.name() == 'NON_VEGETARIAN'}" class="badge-diet-nonveg">
+                            <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Non-Veg
+                        </span>
+                        <span th:if="${food.dietaryType.name() == 'VEGAN'}" class="badge-diet-vegan">
+                            <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Vegan
+                        </span>
+
+                        <span class="badge-status-available">Available</span>
+                    </div>
+
+                    <div class="fb-card-body">
+                        <span class="badge bg-light text-dark border small mb-2" th:text="${food.category.label}">Category</span>
+                        <h5 class="fw-bold mb-2" th:text="${food.foodName}">Food Name</h5>
+                        <p class="text-muted small mb-3" style="min-height: 48px;"
+                           th:text="${#strings.abbreviate(food.description, 100)}">Description</p>
+
+                        <div class="p-2 rounded bg-light mb-2 small">
+                            <div class="d-flex justify-content-between">
+                                <span>Quantity:</span>
+                                <strong><span th:text="${food.remainingQuantity} + ' ' + ${food.unit}">50 meals</span></strong>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted mt-1">
+                                <span>Location:</span>
+                                <span><i class="bi bi-geo-alt-fill text-danger me-1"></i><span th:text="${food.city} + ' - ' + ${food.pincode}">Chennai</span></span>
+                            </div>
+                        </div>
+
+                        <div class="small text-danger">
+                            <i class="bi bi-clock-history me-1"></i> Must collect by:
+                            <strong th:text="${#temporals.format(food.safeCollectionDeadline, 'dd MMM, hh:mm a')}">Deadline</strong>
+                        </div>
+                    </div>
+
+                    <div class="fb-card-footer d-flex justify-content-between align-items-center">
+                        <small class="text-muted" th:text="'By ' + ${food.donor.effectiveName}">Donor</small>
+                        <a th:href="@{'/food/details/' + ${food.id}}" class="btn btn-fb-primary btn-sm">
+                            Details & Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(foodListings)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No food donations match your criteria</h4>
+            <p class="text-muted small mb-3">Try adjusting your filters, location, or search keywords.</p>
+            <div>
+                <a th:href="@{/food}" class="btn btn-fb-outline btn-sm me-2">Clear All Filters</a>
+                <a th:href="@{/food/create}" class="btn btn-fb-primary btn-sm">Post Food Donation</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

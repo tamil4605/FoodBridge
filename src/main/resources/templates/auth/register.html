@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Register')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg p-4 p-md-5 rounded-4 bg-white">
+                    <div class="text-center mb-4">
+                        <div class="brand-icon mx-auto mb-3" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1">Join FoodBridge</h2>
+                        <p class="text-muted small">Create an account to start sharing surplus food, donating essentials, or receiving community aid</p>
+                    </div>
+
+                    <form th:action="@{/auth/register}" th:object="${registerDto}" method="post">
+                        <!-- Account Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select Your Role / Account Type *</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="accountType" id="type_individual"
+                                           value="INDIVIDUAL_DONOR" th:field="*{accountType}" checked onchange="toggleOrgFields()">
+                                    <label class="btn btn-outline-success w-100 p-3 text-start" for="type_individual">
+                                        <i class="bi bi-person-heart fs-4 d-block mb-1"></i>
+                                        <strong class="d-block">Individual Donor</strong>
+                                        <small class="text-muted">Home surplus & items</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="accountType" id="type_business"
+                                           value="BUSINESS_DONOR" th:field="*{accountType}" onchange="toggleOrgFields()">
+                                    <label class="btn btn-outline-success w-100 p-3 text-start" for="type_business">
+                                        <i class="bi bi-shop fs-4 d-block mb-1"></i>
+                                        <strong class="d-block">Restaurant / Business</strong>
+                                        <small class="text-muted">Hotels & banquet meals</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="accountType" id="type_org"
+                                           value="RECIPIENT_ORG" th:field="*{accountType}" onchange="toggleOrgFields()">
+                                    <label class="btn btn-outline-success w-100 p-3 text-start" for="type_org">
+                                        <i class="bi bi-people-fill fs-4 d-block mb-1"></i>
+                                        <strong class="d-block">Recipient Org / NGO</strong>
+                                        <small class="text-muted">Orphanages & trusts</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('accountType')}" th:errors="*{accountType}"></div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Contact Person Name *</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="e.g. Anand Kumar" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold">Email Address *</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="anand@example.com" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- Conditional Organization Fields -->
+                            <div id="orgFieldsBlock" class="col-12 p-3 bg-light rounded border my-2" style="display: none;">
+                                <h6 class="fw-bold mb-3 text-success"><i class="bi bi-building me-1"></i> Organization Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="organizationName" class="form-label fw-semibold">Organization / Restaurant Name</label>
+                                        <input type="text" class="form-control" id="organizationName" th:field="*{organizationName}"
+                                               placeholder="e.g. Saravana Caterers / Hope Home">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="organizationType" class="form-label fw-semibold">Organization Type</label>
+                                        <select class="form-select" id="organizationType" th:field="*{organizationType}">
+                                            <option value="">Select Organization Type...</option>
+                                            <option th:each="t : ${T(com.foodbridge.entity.enums.OrgType).values()}"
+                                                    th:value="${t}" th:text="${t.label}">Type</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-semibold">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" th:field="*{phone}" placeholder="+91 98401 23456" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="address" class="form-label fw-semibold">Street Address *</label>
+                                <input type="text" class="form-control" id="address" th:field="*{address}" placeholder="Door No, Street Name" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="city" class="form-label fw-semibold">City *</label>
+                                <input type="text" class="form-control" id="city" th:field="*{city}" value="Chennai" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="state" class="form-label fw-semibold">State *</label>
+                                <input type="text" class="form-control" id="state" th:field="*{state}" value="Tamil Nadu" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label fw-semibold">Pincode *</label>
+                                <input type="text" class="form-control" id="pincode" th:field="*{pincode}" placeholder="600017" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('pincode')}" th:errors="*{pincode}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="password" class="form-label fw-semibold">Password *</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                       placeholder="Minimum 6 characters" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label fw-semibold">Confirm Password *</label>
+                                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
+                                       placeholder="Repeat your password" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mt-3 mb-4">
+                            <input class="form-check-input" type="checkbox" id="termsCheck" required checked>
+                            <label class="form-check-label small text-muted" for="termsCheck">
+                                I agree to the platform safety guidelines regarding food preservation and hygiene protocols.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-fb-primary w-100 py-2 fs-6 fw-bold">
+                            Create Account
+                        </button>
+                    </form>
+
+                    <div class="text-center small text-muted mt-4">
+                        Already have an account? <a th:href="@{/auth/login}" class="fw-bold text-success text-decoration-none">Sign In</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+
+    <script>
+        function toggleOrgFields() {
+            const isOrg = document.getElementById('type_org').checked;
+            const isBusiness = document.getElementById('type_business').checked;
+            const block = document.getElementById('orgFieldsBlock');
+            if (isOrg || isBusiness) {
+                block.style.display = 'block';
+            } else {
+                block.style.display = 'none';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', toggleOrgFields);
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Campaign Approvals')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Fundraising Campaign Moderation</h1>
+                <p class="text-muted small m-0">Review proposed charity drives, approve legitimate appeals, or reject ineligible proposals</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <!-- Pending Campaigns -->
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-hourglass-split me-2"></i>Awaiting Approval</h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(pendingCampaigns)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Campaign Title</th>
+                            <th>Organization</th>
+                            <th>Cause Category</th>
+                            <th>Target Amount</th>
+                            <th>Deadline</th>
+                            <th>Review Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${pendingCampaigns}">
+                            <td>
+                                <strong th:text="${c.title}">Title</strong>
+                                <p class="small text-muted m-0" th:text="${#strings.abbreviate(c.description, 80)}">Description</p>
+                            </td>
+                            <td><span th:text="${c.organization.effectiveName}">Org</span></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${c.causeCategory.label}">Cause</span></td>
+                            <td><strong class="text-success">₹<span th:text="${#numbers.formatDecimal(c.targetAmount, 0, 'COMMA', 0, 'POINT')}">50,000</span></strong></td>
+                            <td><small th:text="${#temporals.format(c.deadline, 'dd MMM yyyy')}">Date</small></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form th:action="@{/admin/campaigns/moderate}" method="post">
+                                        <input type="hidden" name="campaignId" th:value="${c.id}">
+                                        <input type="hidden" name="approve" value="true">
+                                        <input type="hidden" name="notes" value="Campaign verified and approved">
+                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form th:action="@{/admin/campaigns/moderate}" method="post">
+                                        <input type="hidden" name="campaignId" th:value="${c.id}">
+                                        <input type="hidden" name="approve" value="false">
+                                        <input type="hidden" name="notes" value="Proposal does not meet community guidelines">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(pendingCampaigns)}" class="text-center text-muted p-4">
+                No campaigns currently awaiting moderation.
+            </div>
+        </div>
+
+        <!-- Live Approved Campaigns -->
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4">
+            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-check2-circle me-2"></i>Live Approved Campaigns</h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(approvedCampaigns)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Organization</th>
+                            <th>Target Amount</th>
+                            <th>Raised Amount (Demo)</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${approvedCampaigns}">
+                            <td><strong th:text="${c.title}">Title</strong></td>
+                            <td th:text="${c.organization.effectiveName}">Org</td>
+                            <td>₹<span th:text="${#numbers.formatDecimal(c.targetAmount, 0, 'COMMA', 0, 'POINT')}">50,000</span></td>
+                            <td class="text-success fw-bold">₹<span th:text="${#numbers.formatDecimal(c.raisedAmount, 0, 'COMMA', 0, 'POINT')}">25,000</span></td>
+                            <td>
+                                <div class="progress-fb" style="width: 100px;">
+                                    <div class="progress-fb-bar" th:style="'width: ' + ${c.progressPercentage} + '%;'"></div>
+                                </div>
+                                <small class="text-muted" th:text="${c.progressPercentage} + '%'">50%</small>
+                            </td>
+                            <td><span class="badge bg-success-subtle text-success">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

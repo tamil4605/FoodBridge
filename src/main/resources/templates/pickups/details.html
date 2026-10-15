@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Pickup Coordination')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg p-4 p-md-5 bg-white rounded-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="badge bg-primary-subtle text-primary border mb-1">Pickup Coordination</span>
+                            <h2 class="fw-bold m-0" th:text="${pickup.donationRequest.itemTitle}">Item Title</h2>
+                        </div>
+                        <div>
+                            <span th:if="${pickup.status.name() == 'SCHEDULED'}" class="badge-status-scheduled fs-6">Scheduled</span>
+                            <span th:if="${pickup.status.name() == 'COLLECTED'}" class="badge bg-primary-subtle text-primary fs-6">Collected</span>
+                            <span th:if="${pickup.status.name() == 'HANDED_OVER'}" class="badge-status-completed fs-6">Handed Over</span>
+                            <span th:if="${pickup.status.name() == 'CANCELLED'}" class="badge bg-danger-subtle text-danger fs-6">Cancelled</span>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Tracker -->
+                    <div class="timeline-tracker">
+                        <div class="timeline-step completed">
+                            <div class="timeline-icon"><i class="bi bi-check-lg"></i></div>
+                            <strong class="d-block small">Accepted</strong>
+                            <small class="text-muted">Request Approved</small>
+                        </div>
+                        <div class="timeline-step" th:classappend="${pickup.status.name() != 'CANCELLED' ? 'completed' : ''}">
+                            <div class="timeline-icon"><i class="bi bi-calendar-check"></i></div>
+                            <strong class="d-block small">Scheduled</strong>
+                            <small class="text-muted" th:text="${#temporals.format(pickup.scheduledDateTime, 'dd MMM, hh:mm a')}">Time</small>
+                        </div>
+                        <div class="timeline-step" th:classappend="${pickup.status.name() == 'COLLECTED' or pickup.status.name() == 'HANDED_OVER' ? 'completed' : (pickup.status.name() == 'SCHEDULED' ? 'active' : '')}">
+                            <div class="timeline-icon"><i class="bi bi-truck"></i></div>
+                            <strong class="d-block small">Collected</strong>
+                            <small class="text-muted" th:if="${pickup.collectedAt != null}" th:text="${#temporals.format(pickup.collectedAt, 'hh:mm a')}">Collected</small>
+                        </div>
+                        <div class="timeline-step" th:classappend="${pickup.status.name() == 'HANDED_OVER' ? 'completed' : ''}">
+                            <div class="timeline-icon"><i class="bi bi-check2-all"></i></div>
+                            <strong class="d-block small">Completed</strong>
+                            <small class="text-muted" th:if="${pickup.handedOverAt != null}" th:text="${#temporals.format(pickup.handedOverAt, 'hh:mm a')}">Handed Over</small>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Details Grid -->
+                    <div class="row g-3 p-3 bg-light rounded-3 mb-4 border">
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Donor Establishment / Contact:</span>
+                            <strong th:text="${pickup.donor.effectiveName}">Donor Name</strong>
+                            <div class="small text-muted" th:text="${pickup.donor.phone}">+91 98401 22334</div>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Recipient Organization / NGO:</span>
+                            <strong th:text="${pickup.recipientOrg.effectiveName}">Recipient Org</strong>
+                            <div class="small text-muted" th:text="${pickup.recipientOrg.phone}">+91 98405 66778</div>
+                        </div>
+                        <div class="col-12 border-top pt-2">
+                            <span class="text-muted small d-block">Scheduled Pickup Address:</span>
+                            <strong th:text="${pickup.pickupAddress} + ', ' + ${pickup.city} + ' - ' + ${pickup.pincode}">Address</strong>
+                        </div>
+                        <div class="col-12" th:if="${pickup.specialInstructions != null and !pickup.specialInstructions.isEmpty()}">
+                            <span class="text-muted small d-block">Special Transport Instructions:</span>
+                            <span class="small" th:text="${pickup.specialInstructions}">Instructions</span>
+                        </div>
+                    </div>
+
+                    <!-- Status Action Buttons -->
+                    <div class="d-flex flex-wrap gap-2 pt-3 border-top justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <!-- Confirm Collection Button -->
+                            <form th:if="${pickup.status.name() == 'SCHEDULED'}"
+                                  th:action="@{'/pickups/confirm-collection/' + ${pickup.id}}" method="post">
+                                <button type="submit" class="btn btn-fb-accent">
+                                    <i class="bi bi-truck me-1"></i> Confirm Item Collection
+                                </button>
+                            </form>
+
+                            <!-- Confirm Final Handover Button -->
+                            <form th:if="${pickup.status.name() == 'COLLECTED'}"
+                                  th:action="@{'/pickups/confirm-handover/' + ${pickup.id}}" method="post">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check2-circle me-1"></i> Confirm Final Handover (Complete)
+                                </button>
+                            </form>
+
+                            <!-- Feedback Link if Handed Over -->
+                            <a th:if="${pickup.status.name() == 'HANDED_OVER'}"
+                               th:href="@{'/feedback/create?pickupId=' + ${pickup.id}}" class="btn btn-fb-primary">
+                                <i class="bi bi-star-fill me-1"></i> Leave Rating & Feedback
+                            </a>
+                        </div>
+
+                        <!-- Cancel Button if not yet handed over -->
+                        <div th:if="${pickup.status.name() == 'SCHEDULED'}">
+                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                    data-bs-toggle="collapse" data-bs-target="#cancelPickupCollapse">
+                                Cancel Pickup
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cancellation Collapse Form -->
+                    <div class="collapse mt-3" id="cancelPickupCollapse" th:if="${pickup.status.name() == 'SCHEDULED'}">
+                        <div class="card card-body bg-light border-danger">
+                            <h6 class="fw-bold text-danger mb-2">Cancel Scheduled Pickup</h6>
+                            <form th:action="@{'/pickups/cancel/' + ${pickup.id}}" method="post">
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm" name="reason"
+                                           placeholder="Provide reason for cancellation (e.g. Vehicle breakdown)..." required>
+                                </div>
+                                <button type="submit" class="btn btn-danger btn-sm">Confirm Cancellation</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

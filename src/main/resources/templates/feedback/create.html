@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Leave Donation Feedback')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg p-4 p-md-5 bg-white rounded-4">
+                    <div class="text-center mb-4">
+                        <div class="stat-icon-wrapper stat-icon-amber mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.8rem;">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1">Rate Your Experience</h2>
+                        <p class="text-muted small">Share constructive feedback on donation quality, packaging, and pickup timeliness</p>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-4 border text-start small">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Donation:</span>
+                            <strong th:text="${pickup.donationRequest.itemTitle}">Item Title</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Partner:</span>
+                            <span th:text="${pickup.donor.effectiveName}">Partner</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Handover Date:</span>
+                            <span th:text="${#temporals.format(pickup.handedOverAt != null ? pickup.handedOverAt : pickup.scheduledDateTime, 'dd MMM yyyy')}">Date</span>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/feedback/create}" th:object="${feedbackDto}" method="post">
+                        <input type="hidden" th:field="*{pickupId}">
+
+                        <!-- Star Rating Selector -->
+                        <div class="mb-4 text-center">
+                            <label class="form-label fw-semibold d-block mb-2">Overall Rating (1 to 5 Stars) *</label>
+                            <div class="d-inline-flex gap-3">
+                                <label th:each="star : ${#numbers.sequence(1, 5)}" class="form-check-label text-center" style="cursor: pointer;">
+                                    <input type="radio" class="form-check-input d-none" name="rating"
+                                           th:value="${star}" th:field="*{rating}" th:id="'star' + ${star}">
+                                    <span class="fs-2 text-warning">&#9733;</span>
+                                    <span class="d-block small text-muted" th:text="${star}">1</span>
+                                </label>
+                            </div>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="comment" class="form-label fw-semibold">Review Comments *</label>
+                            <textarea class="form-control" id="comment" th:field="*{comment}" rows="4"
+                                      placeholder="Comment on the condition of the items, freshness, communication, and pickup coordination..." required></textarea>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a th:href="@{/dashboard}" class="btn btn-outline-secondary">Skip For Now</a>
+                            <button type="submit" class="btn btn-fb-primary px-4 fw-bold">Submit Feedback</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

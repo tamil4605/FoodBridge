@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Launch Fundraising Campaign')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg p-4 p-md-5 bg-white rounded-4">
+                    <div class="mb-4">
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle mb-2">Fundraising Campaign Module</span>
+                        <h2 class="fw-bold mb-1">Launch Community Fundraising Drive</h2>
+                        <p class="text-muted small">Mobilize funds for essential community causes. Requires administrator verification before going live.</p>
+                    </div>
+
+                    <form th:action="@{/cash/create}" th:object="${campaignDto}" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="title" class="form-label fw-semibold">Campaign Title *</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}"
+                                       placeholder="e.g. Nutritious Meals for 100 Orphanage Children" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="causeCategory" class="form-label fw-semibold">Cause Category *</label>
+                                <select class="form-select" id="causeCategory" th:field="*{causeCategory}" required>
+                                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}">Cause</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="targetAmount" class="form-label fw-semibold">Funding Target (INR ₹) *</label>
+                                <input type="number" min="100" step="500" class="form-control" id="targetAmount"
+                                       th:field="*{targetAmount}" placeholder="50000" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('targetAmount')}" th:errors="*{targetAmount}"></div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="description" class="form-label fw-semibold">Campaign Description & Fund Utilization Plan *</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4"
+                                          placeholder="Detail why these funds are needed and how they will directly benefit the community..." required></textarea>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="deadline" class="form-label fw-semibold">Campaign Target Deadline *</label>
+                                <input type="date" class="form-control" id="deadline" th:field="*{deadline}" required>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('deadline')}" th:errors="*{deadline}"></div>
+                            </div>
+                        </div>
+
+                        <div class="demo-banner my-4">
+                            <i class="bi bi-shield-lock-fill me-1"></i>
+                            <div>All campaign applications undergo review by FoodBridge administrators to maintain donors' trust and prevent misuse.</div>
+                        </div>
+
+                        <div class="pt-3 border-top d-flex justify-content-between">
+                            <a th:href="@{/cash}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-fb-primary px-4 fw-bold">Submit Campaign for Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

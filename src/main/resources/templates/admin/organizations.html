@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Organization Verifications')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Organization Verifications</h1>
+                <p class="text-muted small m-0">Review charity credentials, grant verification badges, or decline questionable accounts</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <!-- Pending Verifications -->
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-hourglass-split me-2"></i>Pending Verification Queue</h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(pendingOrgs)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Organization Name</th>
+                            <th>Contact Person</th>
+                            <th>Type</th>
+                            <th>Address & City</th>
+                            <th>Submitted Date</th>
+                            <th>Verification Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="org : ${pendingOrgs}">
+                            <td>
+                                <strong th:text="${org.effectiveName}">Name</strong>
+                                <div class="small text-muted" th:text="${org.email}">email</div>
+                            </td>
+                            <td>
+                                <span th:text="${org.name}">Contact</span>
+                                <div class="small text-muted" th:text="${org.phone}">phone</div>
+                            </td>
+                            <td><span class="badge bg-light text-dark border" th:text="${org.organizationType != null ? org.organizationType.label : 'NGO'}">Type</span></td>
+                            <td><small th:text="${org.address} + ', ' + ${org.city} + ' - ' + ${org.pincode}">Address</small></td>
+                            <td><small th:text="${#temporals.format(org.createdAt, 'dd MMM yyyy')}">Date</small></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form th:action="@{/admin/organizations/verify}" method="post">
+                                        <input type="hidden" name="orgUserId" th:value="${org.id}">
+                                        <input type="hidden" name="status" value="VERIFIED">
+                                        <input type="hidden" name="notes" value="Verified legitimate charity credentials">
+                                        <button type="submit" class="btn btn-sm btn-success">Verify</button>
+                                    </form>
+                                    <form th:action="@{/admin/organizations/verify}" method="post">
+                                        <input type="hidden" name="orgUserId" th:value="${org.id}">
+                                        <input type="hidden" name="status" value="REJECTED">
+                                        <input type="hidden" name="notes" value="Insufficient registration documentation">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(pendingOrgs)}" class="text-center text-muted p-4">
+                No organizations pending verification.
+            </div>
+        </div>
+
+        <!-- Verified Organizations -->
+        <div class="card border-0 shadow-sm bg-white rounded-4 p-4">
+            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-patch-check-fill me-2"></i>Verified Organizations</h5>
+            <div class="table-responsive" th:if="${not #lists.isEmpty(verifiedOrgs)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Organization Name</th>
+                            <th>Contact</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Verified At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="org : ${verifiedOrgs}">
+                            <td><strong th:text="${org.effectiveName}">Name</strong></td>
+                            <td th:text="${org.email}">Email</td>
+                            <td><span class="badge bg-success-subtle text-success" th:text="${org.organizationType != null ? org.organizationType.label : 'NGO'}">Type</span></td>
+                            <td th:text="${org.city} + ' (' + ${org.pincode} + ')'">Chennai</td>
+                            <td><small class="text-muted" th:text="${#temporals.format(org.verifiedAt, 'dd MMM yyyy')}">Date</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

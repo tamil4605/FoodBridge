@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Access Forbidden (403)')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div class="container py-5 text-center">
+        <div class="stat-icon-wrapper stat-icon-amber mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+            <i class="bi bi-shield-x"></i>
+        </div>
+        <h1 class="display-5 fw-bold mb-2">403 &mdash; Access Restricted</h1>
+        <p class="text-muted lead mx-auto mb-4" style="max-width: 500px;">
+            You do not possess the required user role permissions to view or perform operations on this page.
+        </p>
+        <a th:href="@{/dashboard}" class="btn btn-fb-primary">Return to Your Dashboard</a>
+    </div>
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

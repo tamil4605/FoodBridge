@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('User Management')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">User Management</h1>
+                <p class="text-muted small m-0">View registered donors, restaurants, organizations, and manage active status</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Admin Dashboard
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User / Organization</th>
+                            <th>Email</th>
+                            <th>Role / Account Type</th>
+                            <th>City / Pincode</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td>
+                                <strong th:text="${user.effectiveName}">Name</strong>
+                                <div class="small text-muted" th:text="${user.phone}">Phone</div>
+                            </td>
+                            <td th:text="${user.email}">email@example.com</td>
+                            <td>
+                                <span class="badge bg-light text-dark border" th:text="${user.role.displayName}">Role</span>
+                            </td>
+                            <td>
+                                <span th:text="${user.city} + ' (' + ${user.pincode} + ')'">Chennai</span>
+                            </td>
+                            <td>
+                                <span th:if="${user.active}" class="badge bg-success-subtle text-success">Active</span>
+                                <span th:unless="${user.active}" class="badge bg-danger-subtle text-danger">Disabled</span>
+                            </td>
+                            <td>
+                                <form th:if="${user.role.name() != 'ROLE_ADMIN'}"
+                                      th:action="@{'/admin/users/toggle-active/' + ${user.id}}" method="post">
+                                    <button type="submit" class="btn btn-sm"
+                                            th:classappend="${user.active ? 'btn-outline-danger' : 'btn-outline-success'}"
+                                            th:text="${user.active ? 'Disable' : 'Enable'}">
+                                        Toggle
+                                    </button>
+                                </form>
+                                <span th:if="${user.role.name() == 'ROLE_ADMIN'}" class="badge bg-secondary-subtle text-secondary">Protected</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

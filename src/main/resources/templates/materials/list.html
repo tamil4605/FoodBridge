@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Browse Material Donations')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">Material & Essential Donations</h1>
+                <p class="text-muted small m-0">Warm blankets, clothes, books, dry rations, and hygiene kits for communities in need</p>
+            </div>
+            <a th:href="@{/materials/create}" class="btn btn-fb-accent">
+                <i class="bi bi-plus-circle me-1"></i> Donate Materials
+            </a>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <form th:action="@{/materials}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted mb-1">Search Keywords</label>
+                    <input type="text" class="form-control form-control-sm" name="keyword" th:value="${keyword}"
+                           placeholder="Search blankets, books, clothes...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted mb-1">Category</label>
+                    <select class="form-select form-select-sm" name="category">
+                        <option value="">All Categories</option>
+                        <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}"
+                                th:selected="${selectedCategory == c}">Category</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">Condition</label>
+                    <select class="form-select form-select-sm" name="condition">
+                        <option value="">All Conditions</option>
+                        <option th:each="cond : ${conditions}" th:value="${cond}" th:text="${cond.label}"
+                                th:selected="${selectedCondition == cond}">Condition</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold text-muted mb-1">City</label>
+                    <input type="text" class="form-control form-control-sm" name="city" th:value="${city}" placeholder="Chennai">
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-fb-primary btn-sm w-100">
+                        <i class="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <a th:href="@{/materials}" class="btn btn-outline-secondary btn-sm" title="Reset Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Materials Grid -->
+        <div class="row g-4" th:if="${not #lists.isEmpty(materialListings)}">
+            <div class="col-lg-4 col-md-6" th:each="mat : ${materialListings}">
+                <div class="fb-card">
+                    <div class="fb-card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark border px-2 py-1" th:text="${mat.category.label}">Category</span>
+                        <span class="badge-status-available">Available</span>
+                    </div>
+
+                    <div class="fb-card-body">
+                        <h5 class="fw-bold mb-2" th:text="${mat.itemName}">Item Name</h5>
+                        <p class="text-muted small mb-3" style="min-height: 48px;"
+                           th:text="${#strings.abbreviate(mat.description, 95)}">Description</p>
+
+                        <div class="p-2 rounded bg-light mb-2 small">
+                            <div class="d-flex justify-content-between">
+                                <span>Condition:</span>
+                                <strong class="text-success" th:text="${mat.conditionStatus.label}">Like New</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span>Quantity:</span>
+                                <strong><span th:text="${mat.remainingQuantity} + ' ' + ${mat.unit}">50 sets</span></strong>
+                            </div>
+                        </div>
+
+                        <div class="small text-muted">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                            <span th:text="${mat.city} + ' (' + ${mat.pincode} + ')'">Chennai</span>
+                        </div>
+                    </div>
+
+                    <div class="fb-card-footer d-flex justify-content-between align-items-center">
+                        <small class="text-muted" th:text="'By ' + ${mat.donor.effectiveName}">Donor</small>
+                        <a th:href="@{'/materials/details/' + ${mat.id}}" class="btn btn-fb-primary btn-sm">
+                            Details & Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(materialListings)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No material donations currently match your search</h4>
+            <p class="text-muted small mb-3">Adjust your search parameters or donate essentials to support local shelters.</p>
+            <div>
+                <a th:href="@{/materials}" class="btn btn-fb-outline btn-sm me-2">Clear Filters</a>
+                <a th:href="@{/materials/create}" class="btn btn-fb-primary btn-sm">Donate Materials</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('My Material Listings')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-bold m-0" style="color: var(--primary);">My Material Donation Listings</h1>
+                <p class="text-muted small m-0">Track and manage essential item bundles you have listed for donation</p>
+            </div>
+            <a th:href="@{/materials/create}" class="btn btn-fb-accent">
+                <i class="bi bi-plus-circle me-1"></i> New Material Listing
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden" th:if="${not #lists.isEmpty(materialListings)}">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Condition</th>
+                            <th>Quantity (Available / Total)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="mat : ${materialListings}">
+                            <td><strong th:text="${mat.itemName}">Item Name</strong></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${mat.category.label}">Category</span></td>
+                            <td><span class="badge bg-success-subtle text-success border" th:text="${mat.conditionStatus.label}">Condition</span></td>
+                            <td>
+                                <strong th:text="${mat.remainingQuantity} + ' ' + ${mat.unit}">45 sets</strong>
+                                <span class="text-muted small" th:text="' / ' + ${mat.quantity}">/ 50</span>
+                            </td>
+                            <td>
+                                <span th:if="${mat.status.name() == 'AVAILABLE'}" class="badge-status-available">Available</span>
+                                <span th:if="${mat.status.name() == 'REQUESTED'}" class="badge-status-requested">Requested</span>
+                                <span th:if="${mat.status.name() == 'ACCEPTED'}" class="badge bg-info-subtle text-info">Accepted</span>
+                                <span th:if="${mat.status.name() == 'PICKUP_SCHEDULED'}" class="badge-status-scheduled">Pickup Scheduled</span>
+                                <span th:if="${mat.status.name() == 'COLLECTED'}" class="badge bg-primary-subtle text-primary">Collected</span>
+                                <span th:if="${mat.status.name() == 'COMPLETED'}" class="badge-status-completed">Completed</span>
+                                <span th:if="${mat.status.name() == 'WITHDRAWN'}" class="badge bg-secondary-subtle text-secondary">Withdrawn</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{'/materials/details/' + ${mat.id}}" class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                    <form th:if="${mat.status.name() == 'AVAILABLE'}"
+                                          th:action="@{'/materials/withdraw/' + ${mat.id}}" method="post"
+                                          onsubmit="return confirmAction('Withdraw this material listing?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Withdraw</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(materialListings)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+            <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+            <h4 class="fw-bold">No material listings created yet</h4>
+            <p class="text-muted small mb-3">Share winter blankets, clothing, study materials, or dry rations to help families in need.</p>
+            <div>
+                <a th:href="@{/materials/create}" class="btn btn-fb-primary btn-sm">Create First Material Listing</a>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
